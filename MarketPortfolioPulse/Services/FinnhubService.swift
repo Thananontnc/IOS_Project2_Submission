@@ -69,17 +69,20 @@ actor FinnhubService {
     }
 
     func quote(symbol: String) async throws -> StockQuote {
-        let url = "\(API.baseURL)/quote?symbol=\(symbol)&token=\(API.key)"
+        let encoded = symbol.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? symbol
+        let url = "\(API.baseURL)/quote?symbol=\(encoded)&token=\(API.key)"
         return try await fetch(url)
     }
 
     func candles(symbol: String, resolution: String, from: Int, to: Int) async throws -> CandleData {
-        let url = "\(API.baseURL)/stock/candle?symbol=\(symbol)&resolution=\(resolution)&from=\(from)&to=\(to)&token=\(API.key)"
+        let encoded = symbol.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? symbol
+        let url = "\(API.baseURL)/stock/candle?symbol=\(encoded)&resolution=\(resolution)&from=\(from)&to=\(to)&token=\(API.key)"
         return try await fetch(url)
     }
 
     func profile(symbol: String) async throws -> CompanyProfile {
-        let url = "\(API.baseURL)/stock/profile2?symbol=\(symbol)&token=\(API.key)"
+        let encoded = symbol.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? symbol
+        let url = "\(API.baseURL)/stock/profile2?symbol=\(encoded)&token=\(API.key)"
         return try await fetch(url)
     }
 

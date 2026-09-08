@@ -99,7 +99,10 @@ struct TickerPickerSheet: View {
             errorMessage = nil
             do {
                 let found = try await FinnhubService.shared.symbolSearch(query: trimmed)
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled else {
+                    isSearching = false
+                    return
+                }
                 // Finnhub returns global listings; keep plain equities/ETFs
                 // and drop the noisier foreign-exchange duplicates.
                 results = Array(found.prefix(30))

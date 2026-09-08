@@ -222,7 +222,7 @@ struct SimulatorView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 Stepper("") {
-                    slider.wrappedValue = min(slider.wrappedValue + stepAmount, range.upperBound * 10)
+                    slider.wrappedValue = min(slider.wrappedValue + stepAmount, range.upperBound)
                 } onDecrement: {
                     slider.wrappedValue = max(slider.wrappedValue - stepAmount, range.lowerBound)
                 }

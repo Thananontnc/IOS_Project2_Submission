@@ -99,9 +99,9 @@ final class DashboardViewModel {
         let sorted = all.sorted { $0.changePercent > $1.changePercent }
         switch direction {
         case .gainers:
-            return Array(sorted.prefix(5))
+            return Array(sorted.filter { $0.changePercent > 0 }.prefix(5))
         case .losers:
-            return Array(sorted.suffix(5).reversed())
+            return Array(sorted.filter { $0.changePercent < 0 }.suffix(5).reversed())
         }
     }
 
@@ -188,7 +188,7 @@ final class DashboardViewModel {
         }
 
         quotes = updated
-        if updated.isEmpty, let first = failures.first {
+        if failures.count == symbols.count, let first = failures.first {
             errorMessage = first.userFacingMessage
         } else {
             errorMessage = nil

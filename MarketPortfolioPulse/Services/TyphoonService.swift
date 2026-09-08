@@ -105,11 +105,42 @@ actor TyphoonService {
                 .replacingOccurrences(of: "```", with: "")
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        if let start = text.firstIndex(of: "{"), let end = text.lastIndex(of: "}") {
+        if let start = text.firstIndex(of: "{"), let end = Self.matchingBraceIndex(in: text, from: start) {
             text = String(text[start...end])
         }
         guard let data = text.data(using: .utf8) else { throw TyphoonError.emptyResponse }
         return try JSONDecoder().decode(T.self, from: data)
+    }
+
+    /// Finds the `}` that closes the `{` at `start`, tracking nesting depth
+    /// and skipping braces inside string literals so trailing prose after
+    /// the object (which may itself contain `}`) doesn't get included.
+    private static func matchingBraceIndex(in text: String, from start: String.Index) -> String.Index? {
+        var depth = 0
+        var inString = false
+        var escaped = false
+        var index = start
+        while index < text.endIndex {
+            let char = text[index]
+            if inString {
+                if escaped {
+                    escaped = false
+                } else if char == "\\" {
+                    escaped = true
+                } else if char == "\"" {
+                    inString = false
+                }
+            } else if char == "\"" {
+                inString = true
+            } else if char == "{" {
+                depth += 1
+            } else if char == "}" {
+                depth -= 1
+                if depth == 0 { return index }
+            }
+            index = text.index(after: index)
+        }
+        return nil
     }
 
     /// Structured analysis of the headline feed, aware of the symbols the
